@@ -1,0 +1,81 @@
+#ifndef RBTREE_H
+#define RBTREE_H
+//#include "TNode.h"
+#include <iostream>
+using namespace std;
+
+enum color_t{ RED, BLACK};
+
+template <class DT>
+class TNode
+{
+
+public:
+	TNode* parent;
+	TNode* left;
+	TNode* right;
+	DT data;
+	color_t color;
+//public:
+	TNode(DT* = new DT());
+	TNode(DT);
+	TNode(DT, color_t);
+};
+template <class DT>
+class RBTree
+{
+private:
+	TNode<DT>* root;
+	
+	TNode<DT>* max(); 
+	TNode<DT>* max(TNode<DT>*);
+
+	TNode<DT>* min();
+	TNode<DT>* min(TNode<DT>*);
+
+	TNode<DT>* successor();
+	TNode<DT>* successor(TNode<DT>*);
+
+	TNode<DT>* predecessor();
+	TNode<DT>* predecessor(TNode<DT>*);
+
+	void transplant(TNode<DT>*, TNode<DT>*);
+	void lRotate(TNode<DT>*);
+	void rRotate(TNode<DT>*);
+
+	TNode<DT>* createNode();
+
+public:
+	RBTree();
+	~RBTree();
+	static TNode<DT>* nil;
+
+	DT* rbtToArray(DT*, int, TNode<DT>*);
+
+	void inOrder();
+	void inOrder(TNode<DT>*);
+
+	void preOrder();
+	void preOrder(TNode<DT>*);
+
+	void postOrder();
+	void postOrder(TNode<DT>*);
+
+	bool rbtInsert();
+	bool rbtInsert(DT);
+	bool rbtInsert(TNode<DT>*);
+	
+	void rbtFixup(TNode<DT>*);
+	
+	TNode<DT>* rbtSearch(DT data);
+	
+	void rbtDelete(DT);
+	void rbtDelete(TNode<DT>*);
+
+	void cleanNodes();
+	void cleanNodes(TNode<DT>* x);
+};
+template <class DT>
+TNode<DT>* RBTree<DT>::nil = new TNode<DT>(0, BLACK);
+
+#endif
