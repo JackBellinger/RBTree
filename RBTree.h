@@ -65,7 +65,8 @@ public:
 	bool rbtInsert(DT);
 	bool rbtInsert(TNode<DT>*);
 	
-	void rbtFixup(TNode<DT>*);
+	void rbtInsFixup(TNode<DT>*);
+	void rbtDelFixup(TNode<DT>*);
 	
 	TNode<DT>* rbtSearch(DT data);
 	

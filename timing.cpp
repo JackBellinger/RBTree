@@ -168,15 +168,15 @@ int lab7()
 	vector<vector<double>> opTimesAvg(3, vector<double>(10, 0));
 	vector<double> sizes(10, 0);
 	cout << "size: " <<sizes[0] << endl;
-	int numSizes = 0;//counter not a constant
 	int numSamples = 10;
-
+	int numSizes;
 	void(*generators[3])(int*, double);
 	generators[0] = generateForwardSorted;
 	generators[1] = generateRandomSorted;
 	//generators[2] = generateRBTreeSorted;
 
-	for(int g = 0; g < 2; g++)//generators = best / worst case loop
+	for(int g = 0; g < 2; g++){//generators = best / worst case loop
+		int numSizes = 0;//counter not a constant
 	for(int SIZE = 1000; SIZE <= 10000; SIZE += 1000)
 	{
 		
@@ -186,9 +186,11 @@ int lab7()
 			RBTree<int>* tree = new RBTree<int>();
 			int elements[SIZE];
 			generators[g](elements, SIZE);
+			//printArray(elements, SIZE);
 			for(int op = 0; op < 3; op++)
 				for(int i = 0; i < SIZE; i++)
 				{
+					//cout << "op: " << op << " i: " << i << " e[i]: " << elements[i] << endl;
 					double time = timeRBTree(tree, op, elements[i]);
 					if(g == 0)
 						opTimesWorst[op][numSizes] += time;
@@ -208,7 +210,8 @@ int lab7()
 			//cout << "Average time to 
 		}
 		numSizes++;
-	}//size loop
+		cout << "numSizes: " << numSizes << endl;
+	}}//size + cases loops
 	double c1 = 0.00001;
 	vector<double> nlogn(10, 0);
 
@@ -234,17 +237,20 @@ int lab7()
 		printVector(opTimesAvg[i]);
 
 	}
-	
-	plt::figure_size(1200, 780);
+	cout << "starting plot" << endl;
+	//plt::figure_size(1200, 780);
+	cout << "logs" << endl;
 	plt::named_plot("nlog(n)", sizes, nlogn);
+	cout << "squares" << endl;
 	plt::named_plot("n^2", sizes, n2);
 	
 	for(int i = 0; i < 3; i++)
 	{
+		cout << "i " << i << endl;
 		plt::named_plot("Worst Case " + opNames[i], sizes, opTimesWorst[i]);
 		plt::named_plot("Average Case " + opNames[i], sizes, opTimesAvg[i]);
 	}
-	plt::xlim(0, 10000);
+	//plt::xlim(0, 10000);
 	plt::title("RBTree Operations Timing");
 	plt::legend();
 	plt::save("./plot.png");
