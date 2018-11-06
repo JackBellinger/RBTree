@@ -252,6 +252,16 @@ int lab7()
 }
 int main()
 {
+	RBTree<int> t = RBTree<int>();
+	t.rbtInsert(5);
+	t.preOrder();
+	cout << endl;
+	t.rbtInsert(3);
+	t.preOrder();
+	cout << endl;
+	t.rbtInsert(2);
+	t.preOrder();
+	cout << endl;
 	lab7();
 }
 
