@@ -1,7 +1,7 @@
 all: bst timeRBTree clean
 
 bst: RBTreeEngine.o RBTree.o 
-	g++ -std=c++11 manualInstantiation.cpp -o bst -g
+	g++ -std=c++11 manualInstantiation.cpp -o rbt -g
 
 timeRBTree: timing.o RBTree.o
 	g++ -std=c++11 timeInstantiation.cpp -I/usr/include/python2.7 -lpython2.7 -o timeRBTree -g 

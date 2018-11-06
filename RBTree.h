@@ -4,7 +4,7 @@
 #include <iostream>
 using namespace std;
 
-enum color_t{ RED, BLACK};
+enum color_t{ RED, BLACK, DOUBLEBLACK};
 
 template <class DT>
 class TNode
@@ -61,9 +61,9 @@ public:
 	void postOrder();
 	void postOrder(TNode<DT>*);
 
-	bool rbtInsert();
-	bool rbtInsert(DT);
-	bool rbtInsert(TNode<DT>*);
+	void rbtInsert();
+	void rbtInsert(DT);
+	void rbtInsert(TNode<DT>*);
 	
 	void rbtInsFixup(TNode<DT>*);
 	void rbtDelFixup(TNode<DT>*);

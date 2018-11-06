@@ -68,25 +68,43 @@ TNode<Student>* RBTree<Student>::createNode()
 	return newNode;
 }
 	template <class DT>
-bool RBTree<DT>::rbtInsert()
+void RBTree<DT>::rbtInsert()
 {
-	return rbtInsert(createNode());
+	rbtInsert(createNode());
 }
 	template <class DT>
-bool RBTree<DT>::rbtInsert(DT data)
+void RBTree<DT>::rbtInsert(DT data)
 {
 	TNode<DT>* node = new TNode<DT>(data);
-	return rbtInsert(node);
+	rbtInsert(node);
 }
 	template <class DT>
-bool RBTree<DT>::rbtInsert(TNode<DT>* newNode)
-	//returns true if the node was added successfully, false if it couldn't add it
+void RBTree<DT>::rbtInsert(TNode<DT>* z)
 {
-	if(root == RBTree<DT>::nil)
+	cout << "inserting " << z->data << endl;
+	TNode<DT>* y = RBTree<DT>::nil;
+	TNode<DT>* x = root;
+	while(x != RBTree<DT>::nil)
 	{
-		root = newNode;
-		return true;
+		y = x;
+		if(z->data < x->data)
+			x = x->left;
+		else
+			x = x->right;
 	}
+	z->parent = y;
+	if(y == RBTree<DT>::nil)
+		root = z;
+	else if(z->data < y->data)
+		y->left = z;
+	else
+		y->right = z;
+	z->left = RBTree<DT>::nil;
+	z->right = RBTree<DT>::nil;
+	z->color = RED;
+	rbtInsFixup(z);
+	/*if(root == RBTree<DT>::nil)
+		root = newNode;
 	else
 	{
 		TNode<DT>* current = root;
@@ -109,16 +127,62 @@ bool RBTree<DT>::rbtInsert(TNode<DT>* newNode)
 	newNode->color = RED;
 	newNode->left = RBTree<DT>::nil;
 	newNode->right = RBTree<DT>::nil;
-	rbtInsFixup(newNode);
+	rbtInsFixup(newNode);*/
 }
 	template <class DT>
 void RBTree<DT>::rbtDelete(DT data)
 {
+	
+	/*TNode<DT>* node();
+	do{
+//find the node w/ data and keep pushing it down to successor until it has only one child
+		node = rbtSearch(data);
+		if(node->right != RBTree<DT>::nil)
+		{
+			TNode<DT>* temp = successor(node);
+			DT d = node->data;
+			node->data = temp->data;
+			temp->data = d;
+		}
+	}while(node->left != RBTree<DT>::nil && node->right != RBTree<DT>::nil);
+	rbtDelFixup(node);*/
 	rbtDelete(rbtSearch(data));
 }
 	template <class DT>
-void RBTree<DT>::rbtDelete(TNode<DT>* node)
+void RBTree<DT>::rbtDelete(TNode<DT>* z)
 {
+	cout << "deleting " << z->data << endl;
+	TNode<DT>* y = z;
+	color_t y_orig_color = y->color;
+	TNode<DT>* x;
+	
+	if(z->left == RBTree<DT>::nil)
+	{
+		x = z->right;
+		transplant(z, z->right);
+	}else if(z->right == RBTree<DT>::nil){
+		x = z->left;
+		transplant(z, z->left);
+	}else{
+		y = successor(z);
+		y_orig_color = y->color;
+		x = y->right;
+		if(y->parent == z)
+			x->parent = y;
+		else
+		{
+			transplant(y, y->right);
+			y->right = z->right;
+			y->right->parent = y;
+		}
+		transplant(z, y);
+		y->left = z->left;
+		y->left->parent = y;
+		y->color = z->color;
+	}
+	if(y_orig_color == BLACK)
+		rbtDelFixup(x);
+	/*
 	if(node == RBTree<DT>::nil)
 		cout << "Couldn't delete" << endl;
 	else
@@ -140,63 +204,123 @@ void RBTree<DT>::rbtDelete(TNode<DT>* node)
 			node->data = del->data;
 		delete del;
 	}
+	*/
 }
 template <class DT>
-void RBTree<DT>::rbtInsFixup(TNode<DT>* node)
+void RBTree<DT>::rbtInsFixup(TNode<DT>* z)
 {
-	while(node->parent->color == RED)
+	while(z->parent->color == RED)
 	{
-		if(node->parent == node->parent->left)
+		if(z->parent == z->parent->parent->left)
 		{
-			TNode<DT>* y = node->parent->parent->right;
+			TNode<DT>* y = z->parent->parent->right;
 			if(y->color == RED)
 			{
-				node->parent->color = BLACK;
+				z->parent->color = BLACK;
 				y->color = BLACK;
-				node->parent->parent->color = RED;
-				node = node->parent->parent;
+				z->parent->parent->color = RED;
+				z = z->parent->parent;
 			}
 			else
 			{
-				if(node == node->parent->right)
+				if(z == z->parent->right)
 				{
-					node = node->parent;
-					lRotate(node);
+					z = z->parent;
+					lRotate(z);
 				}
-				node->parent->color = BLACK;
-				node->parent->parent->color = RED;
-				rRotate(node->parent->parent);
+				z->parent->color = BLACK;
+				z->parent->parent->color = RED;
+				rRotate(z->parent->parent);
 			}	
 		}
 		else
 		{
-			TNode<DT>* y = node->parent->parent->left;
+			TNode<DT>* y = z->parent->parent->left;
 			if(y->color == RED)
 			{
-				node->parent->color = BLACK;
+				z->parent->color = BLACK;
 				y->color = BLACK;
-				node->parent->parent->color = RED;
-				node = node->parent->parent;
+				z->parent->parent->color = RED;
+				z = z->parent->parent;
 			}
 			else
 			{
-				if(node == node->parent->left)
+				if(z == z->parent->left)
 				{
-					node = node->parent;
-					rRotate(node);
+					z = z->parent;
+					rRotate(z);
 				}
-				node->parent->color = BLACK;
-				node->parent->parent->color = RED;
-				lRotate(node->parent->parent);
+				z->parent->color = BLACK;
+				z->parent->parent->color = RED;
+				lRotate(z->parent->parent);
 			}	
 		}
 	}
 	root->color = BLACK;
 }
 template <class DT>
-void RBTree<DT>::rbtDelFixup(TNode<DT>* node)
+void RBTree<DT>::rbtDelFixup(TNode<DT>* x)
 {
-
+	while(x!= root && x->color == BLACK)
+	{
+		if(x == x->parent->left)
+		{
+			TNode<DT>* w = x->parent->right;
+			if(w->color == RED)
+			{
+				w->color = BLACK;
+				x->parent->color = RED;
+				lRotate(x->parent);
+				w = x->parent->right;
+			}
+			cout << "w " << w->data <<endl;
+			if(w->left->color == BLACK && w->right->color == BLACK)
+			{
+				w->color = RED;
+				x = x->parent;
+			}else{
+				if(w->right->color == BLACK)
+				{
+					w->left->color = BLACK;
+					w->color = RED;
+					rRotate(w);
+					w = x->parent->right;
+				}
+				w->color = x->parent->color;
+				x->parent->color = BLACK;
+				w->right->color = BLACK;
+				lRotate(x->parent);
+				x = root;
+			}
+		}else{
+			TNode<DT>* w = x->parent->left;
+			if(w->color == RED)
+			{
+				w->color = BLACK;
+				x->parent->color = RED;
+				rRotate(x->parent);
+				w = x->parent->left;
+			}
+			if(w->right->color == BLACK && w->left->color == BLACK)
+			{
+				w->color = RED;
+				x = x->parent;
+			}else{
+				if(w->left->color == BLACK)
+				{
+					w->right->color = BLACK;
+					w->color = RED;
+					lRotate(w);
+					w = x->parent->left;
+				}
+				w->color = x->parent->color;
+				x->parent->color = BLACK;
+				w->left->color = BLACK;
+				rRotate(x->parent);
+			}
+		}
+	}//while
+	x->color = BLACK;
 }
 template <class DT>
 TNode<DT>* RBTree<DT>::rbtSearch(DT data)
@@ -295,6 +419,14 @@ TNode<DT>* RBTree<DT>::predecessor(TNode<DT>* current)
 	template <class DT>
 void RBTree<DT>::transplant(TNode<DT>* del, TNode<DT>* replace)
 {
+	if(del->parent == RBTree<DT>::nil)
+		root = replace;
+	else if(del == del->parent->left)
+		del->parent->left = replace;
+	else
+		del->parent->right = replace;
+	replace->parent = del->parent;
+	/*
 	if(replace != RBTree<DT>::nil)
 		replace->parent = del->parent;
 	if(del->parent == RBTree<DT>::nil)
@@ -303,6 +435,7 @@ void RBTree<DT>::transplant(TNode<DT>* del, TNode<DT>* replace)
 		del->parent->left = replace;
 	else
 		del->parent->right = replace; 
+	*/
 }
 	template <class DT>
 void RBTree<DT>::lRotate(TNode<DT>* x)
